@@ -49,36 +49,31 @@ GATEWAY_EUI=${GATEWAY_EUI^^} # toupper
 
 echo "Detected EUI $GATEWAY_EUI from $GATEWAY_EUI_NIC"
 
-read -r -p "Do you want to use remote settings file? [y/N]" response
-response=${response,,} # tolower
+echo "Settings :"
 
-if [[ $response =~ ^(yes|y) ]]; then
-    NEW_HOSTNAME="ttn-gateway"
-    REMOTE_CONFIG=true
-else
-    printf "       Host name [ttn-gateway]:"
-    read NEW_HOSTNAME
-    if [[ $NEW_HOSTNAME == "" ]]; then NEW_HOSTNAME="ttn-gateway"; fi
+printf "       Host name [loranet-gateway]:"
+read NEW_HOSTNAME
+if [[ $NEW_HOSTNAME == "" ]]; then NEW_HOSTNAME="loranet-gateway"; fi
 
-    printf "       Descriptive name [ttn-ic880a]:"
-    read GATEWAY_NAME
-    if [[ $GATEWAY_NAME == "" ]]; then GATEWAY_NAME="ttn-ic880a"; fi
+printf "       Descriptive name [loranet-ic880a]:"
+read GATEWAY_NAME
+if [[ $GATEWAY_NAME == "" ]]; then GATEWAY_NAME="loranet-ic880a"; fi
 
-    printf "       Contact email: "
-    read GATEWAY_EMAIL
+printf "       Contact email: "
+read GATEWAY_EMAIL
 
-    printf "       Latitude [0]: "
-    read GATEWAY_LAT
-    if [[ $GATEWAY_LAT == "" ]]; then GATEWAY_LAT=0; fi
+printf "       Latitude [0]: "
+read GATEWAY_LAT
+if [[ $GATEWAY_LAT == "" ]]; then GATEWAY_LAT=0; fi
 
-    printf "       Longitude [0]: "
-    read GATEWAY_LON
-    if [[ $GATEWAY_LON == "" ]]; then GATEWAY_LON=0; fi
+printf "       Longitude [0]: "
+read GATEWAY_LON
+if [[ $GATEWAY_LON == "" ]]; then GATEWAY_LON=0; fi
 
-    printf "       Altitude [0]: "
-    read GATEWAY_ALT
-    if [[ $GATEWAY_ALT == "" ]]; then GATEWAY_ALT=0; fi
-fi
+printf "       Altitude [0]: "
+read GATEWAY_ALT
+if [[ $GATEWAY_ALT == "" ]]; then GATEWAY_ALT=0; fi
+
 
 
 # Change hostname if needed
@@ -152,33 +147,19 @@ make
 popd
 
 # Symlink poly packet forwarder
-if [ ! -d bin ]; then mkdir bin; fi
-if [ -f ./bin/poly_pkt_fwd ]; then rm ./bin/poly_pkt_fwd; fi
-ln -s $INSTALL_DIR/packet_forwarder/poly_pkt_fwd/poly_pkt_fwd ./bin/poly_pkt_fwd
-cp -f ./packet_forwarder/poly_pkt_fwd/global_conf.json ./bin/global_conf.json
+if [ ! -d $INSTALL_DIR/bin ]; then mkdir $INSTALL_DIR/bin; fi
+if [ -f $INSTALL_DIR/bin/poly_pkt_fwd ]; then rm $INSTALL_DIR/bin/poly_pkt_fwd; fi
+ln -s $INSTALL_DIR/packet_forwarder/poly_pkt_fwd/poly_pkt_fwd $INSTALL_DIR/bin/poly_pkt_fwd
+cp -f $INSTALL_DIR/packet_forwarder/poly_pkt_fwd/global_conf.json $INSTALL_DIR/bin/global_conf.json
 
 LOCAL_CONFIG_FILE=$INSTALL_DIR/bin/local_conf.json
 
 # Remove old config file
 if [ -e $LOCAL_CONFIG_FILE ]; then rm $LOCAL_CONFIG_FILE; fi;
 
-if [ "$REMOTE_CONFIG" = true ] ; then
-    # Get remote configuration repo
-    if [ ! -d gateway-remote-config ]; then
-        git clone https://github.com/ttn-zh/gateway-remote-config.git
-        pushd gateway-remote-config
-    else
-        pushd gateway-remote-config
-        git pull
-        git reset --hard
-    fi
+# create new config file
+echo -e "{\n\t\"gateway_conf\": {\n\t\t\"gateway_ID\": \"$GATEWAY_EUI\",\n\t\t\"servers\": [ { \"server_address\": \"router.eu.thethings.network\", \"serv_port_up\": 1700, \"serv_port_down\": 1700, \"serv_enabled\": true } ],\n\t\t\"ref_latitude\": $GATEWAY_LAT,\n\t\t\"ref_longitude\": $GATEWAY_LON,\n\t\t\"ref_altitude\": $GATEWAY_ALT,\n\t\t\"contact_email\": \"$GATEWAY_EMAIL\",\n\t\t\"description\": \"$GATEWAY_NAME\" \n\t}\n}" >$LOCAL_CONFIG_FILE
 
-    ln -s $INSTALL_DIR/gateway-remote-config/$GATEWAY_EUI.json $LOCAL_CONFIG_FILE
-
-    popd
-else
-    echo -e "{\n\t\"gateway_conf\": {\n\t\t\"gateway_ID\": \"$GATEWAY_EUI\",\n\t\t\"servers\": [ { \"server_address\": \"router.eu.thethings.network\", \"serv_port_up\": 1700, \"serv_port_down\": 1700, \"serv_enabled\": true } ],\n\t\t\"ref_latitude\": $GATEWAY_LAT,\n\t\t\"ref_longitude\": $GATEWAY_LON,\n\t\t\"ref_altitude\": $GATEWAY_ALT,\n\t\t\"contact_email\": \"$GATEWAY_EMAIL\",\n\t\t\"description\": \"$GATEWAY_NAME\" \n\t}\n}" >$LOCAL_CONFIG_FILE
-fi
 
 popd
 
