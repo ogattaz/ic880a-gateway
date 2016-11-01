@@ -1,0 +1,12 @@
+[Unit]
+Description=The LoRa-Net ic880a reference gateway
+
+[Service]
+WorkingDirectory=/opt/loranet-gateway/bin/
+ExecStart=/opt/loranet-gateway/bin/start.sh
+SyslogIdentifier=loranet-gateway
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -11,7 +11,7 @@ fi
 VERSION="master"
 if [[ $1 != "" ]]; then VERSION=$1; fi
 
-echo "The Things Network Gateway installer"
+echo "The Lora-Net ic880a reference gateway installer"
 echo "Version $VERSION"
 
 # Update the gateway installer to the correct branch (defaults to master)
@@ -96,7 +96,7 @@ echo "Installing dependencies..."
 apt-get install swig libftdi-dev python-dev
 
 # Install LoRaWAN packet forwarder repositories
-INSTALL_DIR="/opt/ttn-gateway"
+INSTALL_DIR="/opt/loranet-gateway"
 if [ ! -d "$INSTALL_DIR" ]; then mkdir $INSTALL_DIR; fi
 pushd $INSTALL_DIR
 
@@ -119,7 +119,7 @@ popd
 
 # Build LoRa gateway app
 if [ ! -d lora_gateway ]; then
-    git clone https://github.com/TheThingsNetwork/lora_gateway.git
+    git clone https://github.com/Lora-net/lora_gateway.git
     pushd lora_gateway
 else
     pushd lora_gateway
@@ -139,7 +139,7 @@ popd
 
 # Build packet forwarder
 if [ ! -d packet_forwarder ]; then
-    git clone https://github.com/TheThingsNetwork/packet_forwarder.git
+    git clone https://github.com/Lora-net/packet_forwarder.git
     pushd packet_forwarder
 else
     pushd packet_forwarder
