@@ -156,13 +156,13 @@ if [ ! -d $INSTALL_DIR/bin ]; then
 	echo "Create dir [bin]"
 	mkdir $INSTALL_DIR/bin; 
 fi
-if [ -f $INSTALL_DIR/bin/poly_pkt_fwd ]; then 
-    echo "Remove symbolic link [poly_pkt_fwd]"
-	rm $INSTALL_DIR/bin/poly_pkt_fwd; 
+if [ -f $INSTALL_DIR/bin/lora_pkt_fwd ]; then 
+    echo "Remove symbolic link [lora_pkt_fwd]"
+	rm $INSTALL_DIR/bin/lora_pkt_fwd; 
 fi
 
-echo "Create symbolic link [poly_pkt_fwd]"
-ln -s "$INSTALL_DIR/packet_forwarder/poly_pkt_fwd/poly_pkt_fwd" "$INSTALL_DIR/bin/poly_pkt_fwd"
+echo "Create symbolic link [lora_pkt_fwd]"
+ln -s "$INSTALL_DIR/packet_forwarder/lora_pkt_fwd/lora_pkt_fwd" "$INSTALL_DIR/bin/lora_pkt_fwd"
 echo "Copy [global_conf.json]"
 cp -f $INSTALL_DIR/packet_forwarder/poly_pkt_fwd/global_conf.json $INSTALL_DIR/bin/global_conf.json
 
