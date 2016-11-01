@@ -164,7 +164,7 @@ fi
 echo "Create symbolic link [lora_pkt_fwd]"
 ln -s "$INSTALL_DIR/packet_forwarder/lora_pkt_fwd/lora_pkt_fwd" "$INSTALL_DIR/bin/lora_pkt_fwd"
 echo "Copy [global_conf.json]"
-cp -f $INSTALL_DIR/packet_forwarder/poly_pkt_fwd/global_conf.json $INSTALL_DIR/bin/global_conf.json
+cp -f $INSTALL_DIR/packet_forwarder/lora_pkt_fwd/global_conf.json $INSTALL_DIR/bin/global_conf.json
 
 LOCAL_CONFIG_FILE=$INSTALL_DIR/bin/local_conf.json
 
@@ -179,7 +179,6 @@ popd
 
 echo "Gateway EUI is: $GATEWAY_EUI"
 echo "The hostname is: $NEW_HOSTNAME"
-echo "Check gateway status here (find your EUI): http://staging.thethingsnetwork.org/gatewaystatus/"
 echo
 echo "Installation completed."
 
