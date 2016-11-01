@@ -94,6 +94,8 @@ apt-get install swig libftdi-dev python-dev
 INSTALL_DIR="/opt/loranet-gateway"
 if [ ! -d "$INSTALL_DIR" ]; then mkdir $INSTALL_DIR; fi
 pushd $INSTALL_DIR
+echo  "Install dir:" $INSTALL_DIR
+echo  "Current dir: " `pwd` 
 
 # Build libraries
 if [ ! -d libmpsse ]; then
@@ -111,6 +113,7 @@ make install
 ldconfig
 
 popd
+echo  "Current dir: " `pwd` 
 
 # Build LoRa gateway app
 if [ ! -d lora_gateway ]; then
@@ -131,6 +134,7 @@ sed -i -e 's/ATTRS{idProduct}=="6010"/ATTRS{idProduct}=="6014"/g' /etc/udev/rule
 make
 
 popd
+echo  "Current dir:" `pwd` 
 
 # Build packet forwarder
 if [ ! -d packet_forwarder ]; then
@@ -145,11 +149,21 @@ fi
 make
 
 popd
+echo  "Current dir:" `pwd` 
 
 # Symlink poly packet forwarder
-if [ ! -d $INSTALL_DIR/bin ]; then mkdir $INSTALL_DIR/bin; fi
-if [ -f $INSTALL_DIR/bin/poly_pkt_fwd ]; then rm $INSTALL_DIR/bin/poly_pkt_fwd; fi
-ln -s $INSTALL_DIR/packet_forwarder/poly_pkt_fwd/poly_pkt_fwd $INSTALL_DIR/bin/poly_pkt_fwd
+if [ ! -d $INSTALL_DIR/bin ]; then
+	echo "Create dir [bin]"
+	mkdir $INSTALL_DIR/bin; 
+fi
+if [ -f $INSTALL_DIR/bin/poly_pkt_fwd ]; then 
+    echo "Remove symbolic link [poly_pkt_fwd]"
+	rm $INSTALL_DIR/bin/poly_pkt_fwd; 
+fi
+
+echo "Create symbolic link [poly_pkt_fwd]"
+ln -s "$INSTALL_DIR/packet_forwarder/poly_pkt_fwd/poly_pkt_fwd" "$INSTALL_DIR/bin/poly_pkt_fwd"
+echo "Copy [global_conf.json]"
 cp -f $INSTALL_DIR/packet_forwarder/poly_pkt_fwd/global_conf.json $INSTALL_DIR/bin/global_conf.json
 
 LOCAL_CONFIG_FILE=$INSTALL_DIR/bin/local_conf.json
