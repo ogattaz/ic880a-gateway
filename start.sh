@@ -43,7 +43,7 @@ if [ -d ../gateway-remote-config ]; then
     GATEWAY_EUI=${GATEWAY_EUI^^} # toupper
 
     echo "[TTN Gateway]: Use Gateway EUI $GATEWAY_EUI based on $GATEWAY_EUI_NIC"
-    INSTALL_DIR="/opt/ttn-gateway"
+    INSTALL_DIR="/opt/loranet-gateway"
     LOCAL_CONFIG_FILE=$INSTALL_DIR/bin/local_conf.json
 
     if [ -e $LOCAL_CONFIG_FILE ]; then rm $LOCAL_CONFIG_FILE; fi;
