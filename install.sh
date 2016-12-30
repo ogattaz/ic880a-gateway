@@ -116,25 +116,6 @@ fi
 
 
 
-echo "+++ Build libraries ****************************************************************************************"
-echo "+++ Current dir:" `pwd` 
-
-if [ ! -d libmpsse ]; then
-    git clone https://github.com/devttys0/libmpsse.git
-    pushd libmpsse/src
-else
-    pushd libmpsse/src
-    git reset --hard
-    git pull
-fi
-
-./configure --disable-python
-make
-make install
-ldconfig
-
-popd
-
 echo "+++ Build LoRa gateway app ****************************************************************************************"
 echo "+++ Current dir:" `pwd` 
 
