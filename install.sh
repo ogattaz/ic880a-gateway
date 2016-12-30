@@ -114,6 +114,25 @@ if [ -d wiringPi ]; then
     rm -rf wiringPi
 fi 
 
+echo "+++ Build lib libmpsse ****************************************************************************************"
+echo "+++ Current dir:" `pwd` 
+
+# Build libraries
+if [ ! -d libmpsse ]; then
+    git clone https://github.com/devttys0/libmpsse.git
+    pushd libmpsse/src
+else
+    pushd libmpsse/src
+    git reset --hard
+    git pull
+fi
+
+./configure --disable-python
+make
+make install
+ldconfig
+
+popd
 
 
 echo "+++ Build LoRa gateway app ****************************************************************************************"

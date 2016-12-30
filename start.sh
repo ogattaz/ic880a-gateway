@@ -1,12 +1,14 @@
 #! /bin/bash
 
+echo "[loranet-gateway]: +++++++++++++++  START ++++++++++++++"
 
 export SX1301_RESET_BCM_PIN=25
 
 echo "[loranet-gateway]: Reset iC880a PIN ($SX1301_RESET_BCM_PIN)..."
 
 echo "$SX1301_RESET_BCM_PIN"  > /sys/class/gpio/export 
-ls -la /sys/class/gpio/
+ls -la /sys/class/gpio/gpio$SX1301_RESET_BCM_PIN
+
 echo "out" > /sys/class/gpio/gpio$SX1301_RESET_BCM_PIN/direction 
 sleep 1.0 
 echo "[loranet-gateway]: PIN ($SX1301_RESET_BCM_PIN) set to [0]"
@@ -19,7 +21,6 @@ echo "[loranet-gateway]: PIN ($SX1301_RESET_BCM_PIN) set to [0]"
 echo "0"   > /sys/class/gpio/gpio$SX1301_RESET_BCM_PIN/value
 sleep 3.0 
 echo "$SX1301_RESET_BCM_PIN"  > /sys/class/gpio/unexport 
-ls -la /sys/class/gpio/
 
 echo "[loranet-gateway]: iC880a reseted"
 
