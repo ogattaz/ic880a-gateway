@@ -97,7 +97,9 @@ else
     echo "+++ No updating of hostname is needed"
 fi
 
-# Install LoRaWAN packet forwarder repositories
+
+echo "+++ Build INSTALL_DIR ****************************************************************************************"
+
 INSTALL_DIR="/opt/loranet-gateway"
 if [ ! -d "$INSTALL_DIR" ]; then mkdir $INSTALL_DIR; fi
 pushd $INSTALL_DIR
@@ -112,7 +114,30 @@ if [ -d wiringPi ]; then
     rm -rf wiringPi
 fi 
 
-echo "+++ Build LoRa gateway app"
+
+
+echo "+++ Build libraries ****************************************************************************************"
+echo "+++ Current dir:" `pwd` 
+
+if [ ! -d libmpsse ]; then
+    git clone https://github.com/devttys0/libmpsse.git
+    pushd libmpsse/src
+else
+    pushd libmpsse/src
+    git reset --hard
+    git pull
+fi
+
+./configure --disable-python
+make
+make install
+ldconfig
+
+popd
+
+echo "+++ Build LoRa gateway app ****************************************************************************************"
+echo "+++ Current dir:" `pwd` 
+
 if [ ! -d lora_gateway ]; then
     git clone https://github.com/Lora-net/lora_gateway.git
     pushd lora_gateway
@@ -122,14 +147,16 @@ else
     git pull
 fi
 
+echo "+++ Set PLATFORM to [imst_rpi]"
 sed -i -e 's/PLATFORM= kerlink/PLATFORM= imst_rpi/g' ./libloragw/library.cfg
 
 make
 
 popd
+
+echo "+++ Build packet forwarder ****************************************************************************************"
 echo "+++ Current dir:" `pwd` 
 
-echo "+++ Build packet forwarder"
 if [ ! -d packet_forwarder ]; then
     git clone https://github.com/Lora-net/packet_forwarder.git
     pushd packet_forwarder
@@ -142,6 +169,8 @@ fi
 make
 
 popd
+
+echo "+++ Build bin dir ****************************************************************************************"
 echo "+++ Current dir:" `pwd` 
 
 
@@ -157,6 +186,9 @@ ln -s "$INSTALL_DIR/packet_forwarder/lora_pkt_fwd/lora_pkt_fwd" "$INSTALL_DIR/bi
 echo "++++ Copy [global_conf.json]"
 cp -f ./packet_forwarder/lora_pkt_fwd/global_conf.json ./bin/global_conf.json
 
+
+echo "+++ Build local_conf ****************************************************************************************"
+echo "+++ Current dir:" `pwd` 
 
 LOCAL_CONFIG_FILE=$INSTALL_DIR/bin/local_conf.json
 
@@ -186,6 +218,8 @@ else
 fi
 
 popd
+
+echo "+++ Build service ****************************************************************************************"
 echo  "+++ Current dir:" `pwd` 
 
 
@@ -197,7 +231,7 @@ echo "+++ Enable packet forwarder service"
 systemctl enable loranet-gateway.service
 
 echo
-echo "+++ Installation completed."
+echo "+++ Installation completed ****************************************************************************************"
 echo
 echo "+++ Gateway EUI is: $GATEWAY_EUI"
 echo "+++ The hostname is: $NEW_HOSTNAME"
