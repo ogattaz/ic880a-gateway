@@ -47,7 +47,7 @@ fi
 GATEWAY_EUI=$(ip link show $GATEWAY_EUI_NIC | awk '/ether/ {print $2}' | awk -F\: '{print $1$2$3"FFFE"$4$5$6}')
 GATEWAY_EUI=${GATEWAY_EUI^^} # toupper
 
-echo "    Detected EUI $GATEWAY_EUI from $GATEWAY_EUI_NIC"
+echo "+++ Detected EUI $GATEWAY_EUI from $GATEWAY_EUI_NIC"
 
 #read -r -p "Do you want to use remote settings file? [y/N]" response
 #response=${response,,} # tolower
@@ -89,12 +89,12 @@ echo "+++ Change hostname if needed"
 CURRENT_HOSTNAME=$(hostname)
 
 if [[ $NEW_HOSTNAME != $CURRENT_HOSTNAME ]]; then
-    echo "    Updating hostname to '$NEW_HOSTNAME'..."
+    echo "+++ Updating hostname to '$NEW_HOSTNAME'..."
     hostname $NEW_HOSTNAME
     echo $NEW_HOSTNAME > /etc/hostname
     sed -i "s/$CURRENT_HOSTNAME/$NEW_HOSTNAME/" /etc/hosts
 else
-    echo "    Updating hostname isn't needed!"
+    echo "+++ No updating of hostname is needed"
 fi
 
 # Install LoRaWAN packet forwarder repositories
@@ -142,13 +142,21 @@ fi
 make
 
 popd
-echo  "+++ Current dir:" `pwd` 
+echo "+++ Current dir:" `pwd` 
 
-echo "+++ Create symlink poly packet forwarder"
+
+echo "+++ Create ./bin dir if if doesn't exist"
 if [ ! -d bin ]; then mkdir bin; fi
-if [ -f ./bin/poly_pkt_fwd ]; then rm ./bin/poly_pkt_fwd; fi
-ln -s $INSTALL_DIR/packet_forwarder/poly_pkt_fwd/poly_pkt_fwd ./bin/poly_pkt_fwd
-cp -f ./packet_forwarder/poly_pkt_fwd/global_conf.json ./bin/global_conf.json
+
+echo "+++ Remove [lora_pkt_fwd] symlink if it already exists"
+if [ -f ./bin/lora_pkt_fwd ]; then rm ./bin/lora_pkt_fwd; fi
+
+echo "+++ Create [lora_pkt_fwd] symlink"
+ln -s "$INSTALL_DIR/packet_forwarder/lora_pkt_fwd/lora_pkt_fwd" "$INSTALL_DIR/bin/lora_pkt_fwd"
+
+echo "++++ Copy [global_conf.json]"
+cp -f ./packet_forwarder/lora_pkt_fwd/global_conf.json ./bin/global_conf.json
+
 
 LOCAL_CONFIG_FILE=$INSTALL_DIR/bin/local_conf.json
 
@@ -173,22 +181,22 @@ else
 	echo "+++ Create config file."
     echo -e "{\n\t\"gateway_conf\": {\n\t\t\"gateway_ID\": \"$GATEWAY_EUI\",\n\t\t\"servers\": [ { \"server_address\": \"localhost\", \"serv_port_up\": 1680, \"serv_port_down\": 1680, \"serv_enabled\": true } ],\n\t\t\"ref_latitude\": $GATEWAY_LAT,\n\t\t\"ref_longitude\": $GATEWAY_LON,\n\t\t\"ref_altitude\": $GATEWAY_ALT,\n\t\t\"contact_email\": \"$GATEWAY_EMAIL\",\n\t\t\"description\": \"$GATEWAY_NAME\" \n\t}\n}" >$LOCAL_CONFIG_FILE
 	
-	echo "    Dump new config file:"
+	echo "+++ Dump new config file:"
 	cat $LOCAL_CONFIG_FILE
 fi
 
 popd
+echo  "+++ Current dir:" `pwd` 
 
 
-echo "+++ Install packet forwarder as a service"
-echo "    Copy packet forwarder start shell"
+echo "+++ Copy packet forwarder start shell in [./bin] dir"
 cp ./start.sh $INSTALL_DIR/bin/
-echo "    Copy packet forwarder service definition in systemd folder"
+echo "+++ Copy packet forwarder service definition [loranet-gateway.service] in systemd folder"
 cp ./loranet-gateway.service /lib/systemd/system/
-echo "    Enable packet forwarder service"
+echo "+++ Enable packet forwarder service"
 systemctl enable loranet-gateway.service
 
-
+echo
 echo "+++ Installation completed."
 echo
 echo "+++ Gateway EUI is: $GATEWAY_EUI"
