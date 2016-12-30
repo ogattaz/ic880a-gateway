@@ -1,5 +1,5 @@
 [Unit]
-Description=The Things Network Gateway
+Description=The Loranet Gateway used by COHORTE IoT pack
 
 [Service]
 WorkingDirectory=/opt/loranet-gateway/bin/
