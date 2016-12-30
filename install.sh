@@ -179,16 +179,21 @@ fi
 
 popd
 
+
+echo "+++ Install packet forwarder as a service"
+echo "    Copy packet forwarder start shell"
+cp ./start.sh $INSTALL_DIR/bin/
+echo "    Copy packet forwarder service definition in systemd folder"
+cp ./loranet-gateway.service /lib/systemd/system/
+echo "    Enable packet forwarder service"
+systemctl enable loranet-gateway.service
+
+
+echo "+++ Installation completed."
+echo
 echo "+++ Gateway EUI is: $GATEWAY_EUI"
 echo "+++ The hostname is: $NEW_HOSTNAME"
 echo
-echo "+++ Installation completed."
-
-# Start packet forwarder as a service
-cp ./start.sh $INSTALL_DIR/bin/
-cp ./loranet-gateway.service /lib/systemd/system/
-systemctl enable loranet-gateway.service
-
-echo "The system will reboot in 5 seconds..."
+echo "+++ The system will reboot in 5 seconds..."
 sleep 5
 shutdown -r now
