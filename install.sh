@@ -114,47 +114,6 @@ if [ -d wiringPi ]; then
     rm -rf wiringPi
 fi 
 
-echo "+++ Build lib libmpsse ****************************************************************************************"
-echo "+++ Current dir:" `pwd` 
-
-# Build libraries
-if [ ! -d libmpsse ]; then
-    git clone https://github.com/devttys0/libmpsse.git
-    pushd libmpsse/src
-else
-    pushd libmpsse/src
-    git reset --hard
-    git pull
-fi
-
-./configure --disable-python
-make
-make install
-ldconfig
-
-popd
-
-echo "+++ Build lib bcm2835 ****************************************************************************************"
-echo "+++ Current dir:" `pwd` 
-# @see https://github.com/ch2i/ic880a-gateway/blob/ch2i-rpi-shield/install.sh
-
-if [ ! -f /usr/local/lib/libbcm2835.a ]; then
-
-	# need automake 1.4
-    if [ ! -f /usr/bin/aclocal-1.13 ]; then
-        ln -sf /usr/bin/aclocal-1.14 /usr/bin/aclocal-1.13
-    fi
-    wget http://www.airspayce.com/mikem/bcm2835/bcm2835-1.50.tar.gz
-    tar zxvf bcm2835-1.50.tar.gz
-    pushd bcm2835-1.50
-
-    ./configure
-    make
-    make install
-    ldconfig
-
-    popd
-fi
 
 echo "+++ Build LoRa gateway app ****************************************************************************************"
 echo "+++ Current dir:" `pwd` 
