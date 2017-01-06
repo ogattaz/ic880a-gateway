@@ -68,8 +68,9 @@ else
     read GATEWAY_NAME
     if [[ $GATEWAY_NAME == "" ]]; then GATEWAY_NAME="loranet-ic880a"; fi
 
-    printf "       Contact email: "
+    printf "       Contact email [contact@cohorte-technologies.com]: "
     read GATEWAY_EMAIL
+    if [[ $GATEWAY_EMAIL == "" ]]; then GATEWAY_EMAIL="contact@cohorte-technologies.com"; fi
 
     printf "       Latitude [45.206773 ]: "
     read GATEWAY_LAT
